@@ -13,7 +13,10 @@ import logo from "@/shared/images/logo.svg";
 import { getAuthErrorMessage } from "../model/getAuthErrorMessage";
 import { loginSchema, type LoginFormValues } from "../model/auth.schema";
 
+import { useNavigate } from "@tanstack/react-router";
+
 export function LoginPage() {
+  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -39,6 +42,7 @@ export function LoginPage() {
       );
 
       console.log("Login successful:", userCredential.user);
+      navigate({ to: "/products" });
     } catch (error: unknown) {
       console.error("Login failed:", error);
       setError(getAuthErrorMessage(error));
