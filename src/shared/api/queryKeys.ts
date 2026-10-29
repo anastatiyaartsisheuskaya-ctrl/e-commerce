@@ -1,3 +1,4 @@
 export const productKeys = {
-  all: ["products"] as const,
+  product: "product" as const,
+  all: "products" as const,
 };

@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { Heart, ShoppingBag, Shirt } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 import type { Product } from "../model/types";
+
+import { useNavigate } from "@tanstack/react-router";
 
 interface ProductCardProps {
   product: Product;
@@ -15,6 +17,7 @@ const priceFormatter = new Intl.NumberFormat("fr-FR", {
 });
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  const navigate = useNavigate({ from: "/products" });
   const [isFavorite, setIsFavorite] = useState(false);
 
   const discountPercent = Math.min(100, Math.max(0, product.salePercent));
@@ -25,8 +28,24 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     ? product.price * (1 - discountPercent / 100)
     : product.price;
 
+  const handleCardClick = () =>
+    navigate({ to: "/products/$productId", params: { productId: product.id } });
+
+  const handleToggleFavorites = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsFavorite((previous) => !previous);
+  };
+
+  const handleAddToCart = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onAddToCart?.(product);
+  };
+
   return (
-    <article className="group overflow-hidden rounded-2xl bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md">
+    <article
+      className="group overflow-hidden rounded-2xl bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="relative aspect-9/10 overflow-hidden bg-muted">
         {product.imageUrl ? (
           <img
@@ -55,7 +74,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
               : `Add ${product.name} to favorites`
           }
           aria-pressed={isFavorite}
-          onClick={() => setIsFavorite((previous) => !previous)}
+          onClick={handleToggleFavorites}
           className="absolute right-3 top-3 size-9 rounded-full bg-white/90 text-foreground shadow-sm hover:bg-white"
         >
           <Heart
@@ -114,7 +133,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
               size="icon"
               aria-label={`Add ${product.name} to cart`}
               disabled={product.stock <= 0}
-              onClick={() => onAddToCart(product)}
+              onClick={handleAddToCart}
               className="size-8 shrink-0 text-muted-foreground hover:text-foreground"
             >
               <ShoppingBag className="size-5" />

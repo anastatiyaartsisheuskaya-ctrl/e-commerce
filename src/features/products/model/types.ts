@@ -17,4 +17,39 @@ export interface Product {
   stock: number;
   featured: boolean;
 }
-type ProductSize = "XS" | "S" | "M" | "L" | "XL";
+
+export type ProductSize = "XS" | "S" | "M" | "L" | "XL";
+
+export const PRODUCT_SORT_OPTIONS = [
+  { label: "Ascending price", value: "price-asc" },
+  { label: "Descending price", value: "price-desc" },
+] as const;
+
+export type ProductSort = (typeof PRODUCT_SORT_OPTIONS)[number]["value"] | null;
+
+export interface ProductFiltersState {
+  name: string;
+  colors: string[];
+  sizes: string[];
+  categories: string[];
+  minPrice: number | undefined;
+  maxPrice: number | undefined;
+  saleOnly: boolean;
+  sortBy: ProductSort;
+}
+
+export interface ProductSearchRequest {
+  search?: string;
+  category?: string;
+  color?: string;
+  size?: ProductSize;
+  minPrice?: number;
+  maxPrice?: number;
+  onSale?: boolean;
+  sortPrice?: "asc" | "desc";
+}
+
+export interface FilterOption {
+  label: string;
+  value: string;
+}

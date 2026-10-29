@@ -1,6 +1,8 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-import { getCurrentUser } from "@/shared/helpers/getCurrentUser";
+import { getCurrentUser } from "@/shared/helpers";
+
+import { Header } from "@/shared/components/layout/header";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
@@ -20,5 +22,10 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AuthenticatedLayout() {
-  return <Outlet />;
+  return (
+    <>
+      <Header />
+      <Outlet />
+    </>
+  );
 }

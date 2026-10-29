@@ -5,7 +5,7 @@ import { RouterProvider } from "@tanstack/react-router";
 import { router } from "./router";
 import { QueryClientProvider } from "@tanstack/react-query";
 
-import { queryClient } from "./shared/api/query";
+import { queryClient } from "./shared/api";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
