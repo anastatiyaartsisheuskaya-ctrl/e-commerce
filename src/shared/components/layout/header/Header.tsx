@@ -1,7 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, UserRound } from "lucide-react";
-
-import { Input } from "@/shared/components/ui/input";
+import { UserRound } from "lucide-react";
 import logo from "@/shared/images/logo.svg";
 
 export function Header() {
@@ -19,20 +17,6 @@ export function Header() {
             className="h-auto w-22 sm:w-27"
           />
         </Link>
-
-        <div className="relative order-3 w-full sm:order-2 sm:w-64 sm:shrink-0">
-          <Search
-            aria-hidden="true"
-            className="absolute left-3 top-1/2 z-10 size-5 -translate-y-1/2 text-primary-foreground/90"
-          />
-
-          <Input
-            type="search"
-            placeholder="Search"
-            aria-label="Search products"
-            className="h-8.5 rounded-full border-transparent bg-primary-foreground/25 pl-10 text-primary-foreground shadow-none placeholder:text-primary-foreground/75 focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-primary-foreground/50"
-          />
-        </div>
 
         <nav
           aria-label="Main navigation"

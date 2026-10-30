@@ -2,18 +2,20 @@ import { X } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 
+import type { ProductFiltersState } from "../../model/types";
 import {
   CATEGORY_OPTIONS,
   COLOR_OPTIONS,
   SIZE_OPTIONS,
 } from "../../model/product-filters";
-import type { ProductFiltersState, ProductSort } from "../../model/types";
 
 import { MultiSelectFilter } from "./MultiSelectFilter";
 import { PriceFilter } from "./PriceFilter";
 import { ProductSearchInput } from "./ProductSearchInput";
 import { ProductSortControl } from "./ProductSortControl";
 import { SaleFilter } from "./SaleFilter";
+
+import { Badge } from "@/shared/components/ui/badge";
 
 interface ProductsFiltersProps {
   filters: ProductFiltersState;
@@ -37,7 +39,7 @@ export function ProductsFilters({
   if (filters.name.trim()) {
     chips.push({
       key: "name",
-      label: `Name: ${filters.name.trim()}`,
+      label: `Search: ${filters.name}`,
       onRemove: () => onChange({ name: "" }),
     });
   }
@@ -143,21 +145,22 @@ export function ProductsFilters({
       {hasActiveFilters && (
         <div className="flex flex-wrap items-center gap-2">
           {chips.map((chip) => (
-            <span
+            <Badge
+              variant="secondary"
+              className="px-3 py-1.5 h-auto font-light"
               key={chip.key}
-              className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-xs text-muted-foreground"
-            >
-              {chip.label}
-
-              <button
-                type="button"
-                aria-label={`Remove filter ${chip.label}`}
-                onClick={chip.onRemove}
-                className="rounded-full transition-colors hover:text-foreground"
-              >
-                <X className="size-4" />
-              </button>
-            </span>
+              render={
+                <button
+                  type="button"
+                  aria-label={`Remove ${chip.label}`}
+                  onClick={chip.onRemove}
+                  className="hover:text-foreground"
+                >
+                  {chip.label}
+                  <X className="size-5 ml-1.5" />
+                </button>
+              }
+            ></Badge>
           ))}
 
           <Button
@@ -172,10 +175,10 @@ export function ProductsFilters({
         </div>
       )}
 
-      <div className="border-t pt-3">
+      <div className="pt-3">
         <ProductSortControl
           value={filters.sortBy}
-          onChange={(sortBy: ProductSort) => onChange({ sortBy })}
+          onChange={(sortBy) => onChange({ sortBy })}
         />
       </div>
     </section>

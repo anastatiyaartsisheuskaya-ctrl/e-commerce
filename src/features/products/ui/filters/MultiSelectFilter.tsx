@@ -1,97 +1,101 @@
-import { useState } from "react";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Label } from "@/shared/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/components/ui/popover";
 
 import type { FilterOption } from "../../model/types";
 
-interface MultiSelectFilterProps {
+interface MultiSelectFilterProps<T extends string> {
   label: string;
-  options: readonly FilterOption[];
-  value: string[];
-  onChange: (value: string[]) => void;
+  options: readonly FilterOption<T>[];
+  value: T[];
+  onChange: (value: T[]) => void;
 }
 
-export function MultiSelectFilter({
+export function MultiSelectFilter<T extends string>({
   label,
   options,
   value,
   onChange,
-}: MultiSelectFilterProps) {
-  const [isOpen, setIsOpen] = useState(false);
+}: MultiSelectFilterProps<T>) {
+  function toggleOption(optionValue: T, checked: boolean) {
+    const updatedValue = checked
+      ? [...value, optionValue]
+      : value.filter((item) => item !== optionValue);
 
-  function toggleValue(optionValue: string, checked: boolean) {
-    onChange(
-      checked
-        ? [...value, optionValue]
-        : value.filter((item) => item !== optionValue),
-    );
+    onChange(updatedValue);
   }
 
   return (
-    <div className="relative">
-      <Button
-        type="button"
-        variant="outline"
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen((open) => !open)}
-        className="h-10 min-w-36 justify-between rounded-full bg-card px-4 font-normal"
+    <Popover>
+      <PopoverTrigger
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10 min-w-32 justify-between rounded-full bg-card px-4 font-normal"
+          />
+        }
       >
         <span>
           {label}
           {value.length > 0 && (
-            <span className="ml-1 text-muted-foreground">({value.length})</span>
+            <span className="ml-1 text-primary">({value.length})</span>
           )}
         </span>
 
         <ChevronDown className="ml-3 size-4 shrink-0" />
-      </Button>
+      </PopoverTrigger>
 
-      {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-2 max-h-72 w-56 overflow-y-auto rounded-xl border bg-popover p-3 text-popover-foreground shadow-lg">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium">{label}</span>
+      <PopoverContent align="start" className="w-56 rounded-xl p-3">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-sm font-medium">{label}</span>
 
-            {value.length > 0 && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => onChange([])}
-                className="h-7 px-2 text-xs"
-              >
-                Clear
-              </Button>
-            )}
-          </div>
-
-          <div className="space-y-1">
-            {options.map((option) => {
-              const checked = value.includes(option.value);
-
-              return (
-                <label
-                  key={option.value}
-                  className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-2 text-sm hover:bg-muted"
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={(event) =>
-                      toggleValue(option.value, event.target.checked)
-                    }
-                    className="size-4 accent-primary"
-                  />
-
-                  <span className="flex-1">{option.label}</span>
-
-                  {checked && <X className="size-3.5 text-muted-foreground" />}
-                </label>
-              );
-            })}
-          </div>
+          {value.length > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => onChange([])}
+              className="h-7 px-2 text-xs"
+            >
+              Clear
+            </Button>
+          )}
         </div>
-      )}
-    </div>
+
+        <div className="max-h-64 space-y-3 overflow-y-auto">
+          {options.map((option, index) => {
+            const id = `${label}-${index}`;
+            const checked = value.includes(option.value);
+
+            return (
+              <div key={option.value} className="flex items-center gap-3">
+                <Checkbox
+                  id={id}
+                  checked={checked}
+                  onCheckedChange={(checked) =>
+                    toggleOption(option.value, checked === true)
+                  }
+                />
+
+                <Label
+                  htmlFor={id}
+                  className="flex-1 cursor-pointer text-sm font-normal"
+                >
+                  {option.label}
+                </Label>
+              </div>
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

@@ -12,6 +12,8 @@
   --card: #ffffff;
   --card-foreground: #333333;
 
+  --badge: #e2e2e4;
+
   --popover: #ffffff;
   --popover-foreground: #333333;
 
@@ -67,6 +69,8 @@
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+
+  --color-badge: var(--badge);
 
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);

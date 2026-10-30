@@ -1,8 +1,8 @@
 import type {
   ProductFiltersState,
   ProductSearchRequest,
-  ProductSize,
   FilterOption,
+  ProductSize,
 } from "./types";
 
 export const COLOR_OPTIONS: readonly FilterOption[] = [
@@ -18,36 +18,19 @@ export const COLOR_OPTIONS: readonly FilterOption[] = [
   { label: "Yellow", value: "Yellow" },
 ];
 
-export const SIZE_OPTIONS: readonly FilterOption[] = [
+export const SIZE_OPTIONS = [
   { label: "XS", value: "XS" },
   { label: "S", value: "S" },
   { label: "M", value: "M" },
   { label: "L", value: "L" },
   { label: "XL", value: "XL" },
-  ...[
-    "36",
-    "36.5",
-    "37",
-    "37.5",
-    "38",
-    "38.5",
-    "39",
-    "40",
-    "41",
-    "42",
-    "43",
-    "44",
-    "45",
-    "46",
-  ].map((size) => ({ label: size, value: size })),
-];
+] as const satisfies readonly FilterOption<ProductSize>[];
 
 export const CATEGORY_OPTIONS: readonly FilterOption[] = [
   { label: "Shoes", value: "Shoes" },
   { label: "Apparel", value: "Apparel" },
   { label: "Accessories", value: "Accessories" },
-  { label: "Belts", value: "Belts" },
-  { label: "Leather belts", value: "Leather belts" },
+  { label: "Jackets", value: "Jackets" },
   { label: "Sport", value: "Sport" },
   { label: "Beauty", value: "Beauty" },
 ];
@@ -79,9 +62,9 @@ export function toProductSearchRequest(
 
   return {
     ...(search ? { search } : {}),
-    ...(state.categories[0] ? { category: state.categories[0] } : {}),
-    ...(state.colors[0] ? { color: state.colors[0] } : {}),
-    ...(state.sizes[0] ? { size: state.sizes[0] as ProductSize } : {}),
+    ...(state.categories.length ? { category: [...state.categories] } : {}),
+    ...(state.colors.length ? { color: [...state.colors] } : {}),
+    ...(state.sizes.length ? { size: [...state.sizes] } : {}),
     ...(state.minPrice !== undefined ? { minPrice: state.minPrice } : {}),
     ...(state.maxPrice !== undefined ? { maxPrice: state.maxPrice } : {}),
     ...(state.saleOnly ? { onSale: true } : {}),
