@@ -3,6 +3,8 @@ export interface Category {
   parentCategory: string;
 }
 
+export type CategoriesHierarchyResponse = Record<string, string[]>;
+
 export interface Product {
   id: string;
   name: string;
@@ -32,8 +34,8 @@ export interface ProductFiltersState {
   colors: string[];
   sizes: ProductSize[];
   categories: string[];
-  minPrice: number | undefined;
-  maxPrice: number | undefined;
+  minPrice?: number;
+  maxPrice?: number;
   saleOnly: boolean;
   sortBy: ProductSort;
 }

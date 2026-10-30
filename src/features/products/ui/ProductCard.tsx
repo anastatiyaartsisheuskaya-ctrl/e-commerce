@@ -6,6 +6,8 @@ import type { Product } from "../model/types";
 
 import { useNavigate } from "@tanstack/react-router";
 
+import { Badge } from "@/shared/components/ui/badge";
+
 interface ProductCardProps {
   product: Product;
   onAddToCart?: (product: Product) => void;
@@ -85,22 +87,14 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         </Button>
 
         <div className="absolute inset-x-2 bottom-3 flex flex-wrap justify-center gap-1.5">
-          {product.featured && (
-            <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
-              Featured
-            </span>
-          )}
+          {product.featured && <Badge variant="default">Featured</Badge>}
 
           {hasDiscount && (
-            <span className="rounded-full bg-background px-3 py-1 text-xs font-medium text-foreground">
-              Sale -{discountPercent}%
-            </span>
+            <Badge variant="accent">Sale -{discountPercent}%</Badge>
           )}
 
           {product.stock === 0 && (
-            <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-              Out of stock
-            </span>
+            <Badge variant="secondary">Out of stock</Badge>
           )}
         </div>
       </div>

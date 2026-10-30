@@ -8,12 +8,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/shared/components/ui/popover";
+import { Spinner } from "@/shared/components/ui/spinner";
 
 import type { FilterOption } from "../../model/types";
 
 interface MultiSelectFilterProps<T extends string> {
   label: string;
-  options: readonly FilterOption<T>[];
+  options?: readonly FilterOption<T>[];
   value: T[];
   onChange: (value: T[]) => void;
 }
@@ -71,29 +72,33 @@ export function MultiSelectFilter<T extends string>({
         </div>
 
         <div className="max-h-64 space-y-3 overflow-y-auto">
-          {options.map((option, index) => {
-            const id = `${label}-${index}`;
-            const checked = value.includes(option.value);
+          {options ? (
+            options.map((option, index) => {
+              const id = `${label}-${index}`;
+              const checked = value.includes(option.value);
 
-            return (
-              <div key={option.value} className="flex items-center gap-3">
-                <Checkbox
-                  id={id}
-                  checked={checked}
-                  onCheckedChange={(checked) =>
-                    toggleOption(option.value, checked === true)
-                  }
-                />
+              return (
+                <div key={option.value} className="flex items-center gap-3">
+                  <Checkbox
+                    id={id}
+                    checked={checked}
+                    onCheckedChange={(checked) =>
+                      toggleOption(option.value, checked === true)
+                    }
+                  />
 
-                <Label
-                  htmlFor={id}
-                  className="flex-1 cursor-pointer text-sm font-normal"
-                >
-                  {option.label}
-                </Label>
-              </div>
-            );
-          })}
+                  <Label
+                    htmlFor={id}
+                    className="flex-1 cursor-pointer text-sm font-normal"
+                  >
+                    {option.label}
+                  </Label>
+                </div>
+              );
+            })
+          ) : (
+            <Spinner />
+          )}
         </div>
       </PopoverContent>
     </Popover>

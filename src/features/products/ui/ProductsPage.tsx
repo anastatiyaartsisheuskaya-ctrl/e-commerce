@@ -2,15 +2,17 @@ import { useMemo } from "react";
 
 import { Button } from "@/shared/components/ui/button";
 
-import { useProductFilters } from "../model/helper/useProductFilters";
+import { useProductFilters } from "../model/hook/useProductFilters";
 
 import { useDebouncedValue } from "@/shared/helpers";
 import { useProductsQuery } from "../model/query";
 
-import { toProductSearchRequest } from "../model/product-filters";
+import { toProductSearchRequest } from "../model/helper/product-filters";
 
 import { ProductsFilters } from "./filters/ProductsFilters";
 import { ProductCard } from "./ProductCard";
+
+import { CategoriesSidebar } from "./CategoriesSidebar";
 
 export function ProductsPage() {
   const { filters, updateFilters, clearFilters } = useProductFilters();
@@ -88,52 +90,60 @@ export function ProductsPage() {
 
   return (
     <main className="mx-auto w-full max-w-[1600px] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-      <ProductsFilters
-        filters={filters}
-        onChange={updateFilters}
-        onClear={clearFilters}
-      />
+      <div className="flex flex-col gap-8 md:flex-row">
+        <CategoriesSidebar
+          selectedCategories={filters.categories}
+          onChange={(categories) => updateFilters({ categories })}
+        />
+        <div className="min-w-0 flex-1 space-y-6">
+          <ProductsFilters
+            filters={filters}
+            onChange={updateFilters}
+            onClear={clearFilters}
+          />
 
-      {isFetching && (
-        <p role="status" className="text-xs text-muted-foreground">
-          Updating products...
-        </p>
-      )}
+          {isFetching && (
+            <p role="status" className="text-xs text-muted-foreground">
+              Updating products...
+            </p>
+          )}
 
-      {isError && products && (
-        <p role="alert" className="text-sm text-destructive">
-          Couldn't refresh products. Showing the previous results.
-        </p>
-      )}
+          {isError && products && (
+            <p role="alert" className="text-sm text-destructive">
+              Couldn't refresh products. Showing the previous results.
+            </p>
+          )}
 
-      {!visibleProducts.length && !isFetching ? (
-        <div className="flex min-h-64 flex-col items-center justify-center gap-2 text-center">
-          <h2 className="text-xl font-semibold">No products found</h2>
+          {!visibleProducts.length && !isFetching ? (
+            <div className="flex min-h-64 flex-col items-center justify-center gap-2 text-center">
+              <h2 className="text-xl font-semibold">No products found</h2>
 
-          <p className="text-sm text-muted-foreground">
-            Try changing your filters or clearing them.
-          </p>
+              <p className="text-sm text-muted-foreground">
+                Try changing your filters or clearing them.
+              </p>
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={clearFilters}
-            className="mt-2"
-          >
-            Clear filters
-          </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={clearFilters}
+                className="mt-2"
+              >
+                Clear filters
+              </Button>
+            </div>
+          ) : (
+            <section
+              aria-label="Products"
+              aria-busy={isFetching}
+              className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            >
+              {visibleProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </section>
+          )}
         </div>
-      ) : (
-        <section
-          aria-label="Products"
-          aria-busy={isFetching}
-          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-        >
-          {visibleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </section>
-      )}
+      </div>
     </main>
   );
 }

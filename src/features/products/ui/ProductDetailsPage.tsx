@@ -90,7 +90,7 @@ export function ProductDetailsPage() {
         )}
 
         <Button variant="default">
-          <Link to="/products">
+          <Link to="/products" search={(prev) => ({ ...prev })}>
             <ArrowLeft className="mr-2 size-4" />
             Back to products
           </Link>

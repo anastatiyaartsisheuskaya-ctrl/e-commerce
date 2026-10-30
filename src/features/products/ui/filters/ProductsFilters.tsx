@@ -2,12 +2,11 @@ import { X } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 
-import type { ProductFiltersState } from "../../model/types";
+import type { ProductFiltersState, FilterOption } from "../../model/types";
 import {
-  CATEGORY_OPTIONS,
   COLOR_OPTIONS,
   SIZE_OPTIONS,
-} from "../../model/product-filters";
+} from "../../model/helper/product-filters";
 
 import { MultiSelectFilter } from "./MultiSelectFilter";
 import { PriceFilter } from "./PriceFilter";
@@ -17,9 +16,14 @@ import { SaleFilter } from "./SaleFilter";
 
 import { Badge } from "@/shared/components/ui/badge";
 
+import { useCategoriesQuery } from "../../model/query";
+
 interface ProductsFiltersProps {
   filters: ProductFiltersState;
-  onChange: (patch: Partial<ProductFiltersState>) => void;
+  onChange: (
+    patch: Partial<ProductFiltersState>,
+    options?: { replace?: boolean },
+  ) => void;
   onClear: () => void;
 }
 
@@ -35,6 +39,15 @@ export function ProductsFilters({
   onClear,
 }: ProductsFiltersProps) {
   const chips: ActiveChip[] = [];
+
+  const { data: categories } = useCategoriesQuery();
+
+  const CATEGORY_OPTIONS: FilterOption<string>[] | undefined = categories?.map(
+    ({ category }) => ({
+      label: category,
+      value: category,
+    }),
+  );
 
   if (filters.name.trim()) {
     chips.push({
@@ -103,7 +116,7 @@ export function ProductsFilters({
     <section aria-label="Product filters" className="space-y-4">
       <ProductSearchInput
         value={filters.name}
-        onChange={(name) => onChange({ name })}
+        onChange={(name) => onChange({ name }, { replace: true })}
       />
 
       <div className="flex flex-wrap items-center gap-2">
