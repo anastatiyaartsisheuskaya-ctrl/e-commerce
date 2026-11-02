@@ -35,13 +35,7 @@ export function LoginPage() {
     setError(null);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password,
-      );
-
-      console.log("Login successful:", userCredential.user);
+      await signInWithEmailAndPassword(auth, values.email, values.password);
       navigate({ to: "/products" });
     } catch (error: unknown) {
       console.error("Login failed:", error);

@@ -1,16 +1,23 @@
 import { useState, type MouseEvent } from "react";
 import { Heart, ShoppingBag, Shirt } from "lucide-react";
-
-import { Button } from "@/shared/components/ui/button";
-import type { Product } from "../model/types";
-
 import { useNavigate } from "@tanstack/react-router";
 
+import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
+
+import type { Product } from "../model/types";
+import type { AddCartItemInput } from "@/features/cart";
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart?: (product: Product) => void;
+  onAddToCart?: (product: AddCartItemInput) => void;
 }
 
 const priceFormatter = new Intl.NumberFormat("fr-FR", {
@@ -20,10 +27,12 @@ const priceFormatter = new Intl.NumberFormat("fr-FR", {
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   const navigate = useNavigate({ from: "/products" });
+
   const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | undefined>();
+  const [selectedSize, setSelectedSize] = useState<string | undefined>();
 
   const discountPercent = Math.min(100, Math.max(0, product.salePercent));
-
   const hasDiscount = discountPercent > 0;
 
   const currentPrice = hasDiscount
@@ -31,7 +40,11 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     : product.price;
 
   const handleCardClick = () =>
-    navigate({ to: "/products/$productId", params: { productId: product.id } });
+    navigate({
+      to: "/products/$productId",
+      params: { productId: product.id },
+      search: (previous) => ({ ...previous }),
+    });
 
   const handleToggleFavorites = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -40,14 +53,21 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
   const handleAddToCart = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    onAddToCart?.(product);
+
+    onAddToCart?.({
+      productId: product.id,
+      selectedColor,
+      selectedSize,
+      quantity: 1,
+    });
   };
 
   return (
     <article
-      className="group overflow-hidden rounded-2xl bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md cursor-pointer"
+      className="group cursor-pointer overflow-hidden rounded-2xl bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md"
       onClick={handleCardClick}
     >
+      {/* Product image */}
       <div className="relative aspect-9/10 overflow-hidden bg-muted">
         {product.imageUrl ? (
           <img
@@ -86,8 +106,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           />
         </Button>
 
+        {/* Badges */}
         <div className="absolute inset-x-2 bottom-3 flex flex-wrap justify-center gap-1.5">
-          {product.featured && <Badge variant="default">Featured</Badge>}
+          {product.featured && <Badge>Featured</Badge>}
 
           {hasDiscount && (
             <Badge variant="accent">Sale -{discountPercent}%</Badge>
@@ -99,14 +120,70 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         </div>
       </div>
 
-      <div className="flex min-h-28 flex-col justify-between gap-3 p-4">
-        <h2
-          className="line-clamp-2 min-h-10 text-sm leading-5 text-muted-foreground"
-          title={product.name}
-        >
-          {product.name}
-        </h2>
+      {/* Product information */}
+      <div className="flex min-h-44 flex-col justify-between gap-3 p-4">
+        <div className="space-y-3">
+          <h2
+            className="line-clamp-2 min-h-10 text-sm leading-5 text-muted-foreground"
+            title={product.name}
+          >
+            {product.name}
+          </h2>
 
+          {/* Variant selection */}
+          {/* Variant selection */}
+          <div
+            className="space-y-3"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {/* Color selection */}
+            {product.colors.length > 0 && (
+              <Select
+                value={selectedColor ?? ""}
+                onValueChange={(value) => setSelectedColor(value ?? undefined)}
+              >
+                <SelectTrigger
+                  aria-label="Select color"
+                  className="h-9 w-full bg-background text-xs"
+                >
+                  <SelectValue placeholder="Select color" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {product.colors.map((color) => (
+                    <SelectItem key={color} value={color}>
+                      {color}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {/* Size selection */}
+            {product.sizes.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                {product.sizes.map((size) => (
+                  <Button
+                    key={size}
+                    type="button"
+                    size="sm"
+                    variant={selectedSize === size ? "default" : "outline"}
+                    aria-pressed={selectedSize === size}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setSelectedSize(size);
+                    }}
+                    className="h-8 min-w-9 px-3 text-xs"
+                  >
+                    {size}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Price and cart action */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
             <span className="font-semibold tabular-nums">

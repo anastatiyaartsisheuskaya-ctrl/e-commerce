@@ -12,6 +12,7 @@ import {
 
 import { Button } from "@/shared/components/ui/button";
 import { useProductQuery } from "../model/query";
+import { ProductDetailsPageSkeleton } from "./ProductDetailsPageSkeleton";
 
 const priceFormatter = new Intl.NumberFormat("fr-FR", {
   style: "currency",
@@ -39,21 +40,7 @@ export function ProductDetailsPage() {
   const [isFavorite, setIsFavorite] = useState(false);
 
   if (isPending) {
-    return (
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-2 lg:gap-14">
-          <div className="aspect-4/5 animate-pulse rounded-2xl bg-muted" />
-
-          <div className="space-y-5 py-4">
-            <div className="h-5 w-1/4 animate-pulse rounded bg-muted" />
-            <div className="h-10 w-3/4 animate-pulse rounded bg-muted" />
-            <div className="h-6 w-1/3 animate-pulse rounded bg-muted" />
-            <div className="h-24 animate-pulse rounded bg-muted" />
-            <div className="h-12 animate-pulse rounded bg-muted" />
-          </div>
-        </div>
-      </main>
-    );
+    return <ProductDetailsPageSkeleton />;
   }
 
   const isNotFound =

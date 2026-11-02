@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { Button } from "@/shared/components/ui/button";
 
 import { useProductFilters } from "../model/hook/useProductFilters";
+import { useAddCartMutation } from "@/features/cart";
 
 import { useDebouncedValue } from "@/shared/helpers";
 import { useProductsQuery } from "../model/query";
@@ -13,6 +14,10 @@ import { ProductsFilters } from "./filters/ProductsFilters";
 import { ProductCard } from "./ProductCard";
 
 import { CategoriesSidebar } from "./CategoriesSidebar";
+
+import type { AddCartItemInput } from "@/features/cart";
+
+import { ProductsPageSkeleton } from "./ProductsPageSkeleton";
 
 export function ProductsPage() {
   const { filters, updateFilters, clearFilters } = useProductFilters();
@@ -36,6 +41,7 @@ export function ProductsPage() {
     isFetching,
     refetch,
   } = useProductsQuery(request);
+  const { mutate } = useAddCartMutation();
 
   const visibleProducts = useMemo(() => {
     const result = [...(products ?? [])];
@@ -49,25 +55,12 @@ export function ProductsPage() {
     return result;
   }, [products, filters.sortBy]);
 
+  const handleAddToCart = (product: AddCartItemInput) => {
+    mutate(product);
+  };
+
   if (isPending && !products) {
-    return (
-      <main className="mx-auto w-full max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 8 }, (_, index) => (
-            <div
-              key={index}
-              className="overflow-hidden rounded-2xl bg-card shadow-sm"
-            >
-              <div className="aspect-9/10 animate-pulse bg-muted" />
-              <div className="space-y-3 p-4">
-                <div className="h-4 w-4/5 animate-pulse rounded bg-muted" />
-                <div className="h-5 w-2/5 animate-pulse rounded bg-muted" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </main>
-    );
+    return <ProductsPageSkeleton />;
   }
 
   if (isError && !products) {
@@ -138,7 +131,11 @@ export function ProductsPage() {
               className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
               {visibleProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                />
               ))}
             </section>
           )}

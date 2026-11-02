@@ -33,13 +33,7 @@ export function RegisterPage() {
     setError(null);
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password,
-      );
-
-      console.log("Registration successful:", userCredential.user);
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
     } catch (error: unknown) {
       console.error("Registration failed:", error);
       setError(getAuthErrorMessage(error));

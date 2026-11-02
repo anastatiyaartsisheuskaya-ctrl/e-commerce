@@ -1,8 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { UserRound } from "lucide-react";
+import { UserRound, LogOut } from "lucide-react";
 import logo from "@/shared/images/logo.svg";
+import { Button } from "../../ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "../../ui/popover";
+import { auth } from "@/shared/lib/firebase";
+import { signOut } from "firebase/auth";
+import { useNavigate } from "@tanstack/react-router";
 
 export function Header() {
+  const navigate = useNavigate();
   return (
     <header className="bg-primary text-primary-foreground">
       <div className="mx-auto flex min-h-20 max-w-[1800px] flex-wrap items-center gap-x-5 gap-y-3 px-4 py-4 sm:min-h-23.5 sm:flex-nowrap sm:gap-8 sm:px-8 lg:px-14">
@@ -30,23 +42,54 @@ export function Header() {
           </Link>
 
           <Link
-            to="/"
+            to="/cart"
             className="py-1 underline-offset-8 transition-opacity underline hover:opacity-80"
           >
             Cart
           </Link>
 
-          <Link
-            to="/login"
-            aria-label="Account"
-            title="Account"
-            className="ml-2 inline-flex size-9 items-center justify-center rounded-full transition-colors hover:bg-primary-foreground/15 sm:ml-6"
-          >
-            <UserRound
-              aria-hidden="true"
-              className="size-full fill-current stroke-primary"
-            />
-          </Link>
+          <Popover>
+            <PopoverTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Account"
+                  title="Account"
+                  className="ml-2 size-9 rounded-full text-primary-foreground hover:bg-primary-foreground/15 hover:text-primary-foreground sm:ml-3"
+                />
+              }
+            >
+              <UserRound className="size-5" />
+            </PopoverTrigger>
+
+            <PopoverContent align="end" className="w-64 space-y-2">
+              <PopoverHeader>
+                <PopoverTitle className="truncate text-sm font-medium">
+                  <span className="text-primary font-bold">Login:</span>{" "}
+                  {auth.currentUser?.email}
+                </PopoverTitle>
+              </PopoverHeader>
+
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={() =>
+                  signOut(auth)
+                    .then(() => {
+                      navigate({ to: "/login" });
+                    })
+                    .catch((error) => {
+                      console.error("Logout error: ", error);
+                    })
+                }
+              >
+                <LogOut className="mr-2 size-4" />
+                Log out
+              </Button>
+            </PopoverContent>
+          </Popover>
         </nav>
       </div>
     </header>
