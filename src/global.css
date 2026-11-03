@@ -119,6 +119,8 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --animate-badge-pop: badge-pop 350ms ease-in-out;
 }
 
 @media (max-width: 1024px) {
@@ -148,5 +150,20 @@ body {
 
   html {
     @apply font-sans;
+  }
+}
+
+@keyframes badge-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.4);
+  }
+  65% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
   }
 }

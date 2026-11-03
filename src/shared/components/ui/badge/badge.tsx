@@ -9,9 +9,7 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: "bg-card text-card-foreground hover:bg-card/80",
-
         accent: "bg-primary text-primary-foreground hover:bg-primary/80",
-
         secondary: "bg-badge text-muted-foreground hover:bg-badge/70",
       },
     },
