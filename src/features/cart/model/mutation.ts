@@ -1,8 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { cartKey } from "@/shared/api";
+import { cartKey, productKeys } from "@/shared/api";
 
-import { addCartItem, updateCartItem, removeCartItem } from "../api/cart";
+import {
+  addCartItem,
+  updateCartItem,
+  removeCartItem,
+  clearCart,
+} from "../api/cart";
 
 import type {
   AddCartItemDto,
@@ -13,6 +18,8 @@ import type {
 } from "./types";
 
 import { queryClient } from "@/shared/api";
+
+import { toast } from "@/shared/components/ui/toast";
 
 const queryKey = [cartKey.cart] as const;
 
@@ -47,8 +54,6 @@ export function useAddCartMutation() {
 
       const previousCart = queryClient.getQueryData<CartResponse>(queryKey);
 
-      // We can only update an existing line optimistically.
-      // New lines need their backend-generated ID and product data.
       if (
         previousCart &&
         newItem.selectedColor?.trim() &&
@@ -83,11 +88,22 @@ export function useAddCartMutation() {
       if (context?.previousCart) {
         queryClient.setQueryData(queryKey, context.previousCart);
       }
+
+      toast.add({
+        type: "error",
+        title: "An Error accrued",
+        description: _error.message,
+      });
     },
 
     onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: [productKeys.all] as const });
       queryClient.setQueryData<CartResponse>(queryKey, {
         items: response.items,
+      });
+      toast.add({
+        type: "success",
+        title: "Product added successfully",
       });
     },
   });
@@ -122,6 +138,11 @@ export function useUpdateCartItemMutation() {
       if (context?.previousCart) {
         queryClient.setQueryData(queryKey, context.previousCart);
       }
+      toast.add({
+        type: "error",
+        title: "An Error accrued",
+        description: _error.message,
+      });
     },
 
     onSuccess: (response: MutationResponse) => {
@@ -155,11 +176,43 @@ export function useRemoveCartItemMutation() {
       if (context?.previousCart) {
         queryClient.setQueryData(queryKey, context.previousCart);
       }
+      toast.add({
+        type: "error",
+        title: "An Error accrued",
+        description: _error.message,
+      });
     },
 
     onSuccess: (response: MutationResponse) => {
       queryClient.setQueryData<CartResponse>(queryKey, {
         items: response.items,
+      });
+      toast.add({
+        type: "success",
+        title: "Product removed",
+      });
+    },
+  });
+}
+
+export function useClearCartMutation() {
+  return useMutation({
+    mutationFn: clearCart,
+    onError: (_error) => {
+      toast.add({
+        type: "error",
+        title: "An Error accrued",
+        description: _error.message,
+      });
+    },
+
+    onSuccess: () => {
+      queryClient.setQueryData<CartResponse>(queryKey, {
+        items: [],
+      });
+      toast.add({
+        type: "success",
+        title: "Cart cleared",
       });
     },
   });

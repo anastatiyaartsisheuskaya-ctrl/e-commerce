@@ -1,17 +1,12 @@
 import { useState } from "react";
 import { isAxiosError } from "axios";
 import { Link, useParams } from "@tanstack/react-router";
-import {
-  ArrowLeft,
-  Heart,
-  Minus,
-  Plus,
-  ShoppingBag,
-  Shirt,
-} from "lucide-react";
+import { ArrowLeft, Heart, ShoppingBag, Shirt } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { Stepper } from "@/shared/components/ui/stepper";
 import { useProductQuery } from "../model/query";
+import { useAddCartMutation } from "@/features/cart";
 import { ProductDetailsPageSkeleton } from "./ProductDetailsPageSkeleton";
 
 const priceFormatter = new Intl.NumberFormat("fr-FR", {
@@ -32,6 +27,7 @@ export function ProductDetailsPage() {
     refetch,
     isFetching,
   } = useProductQuery(productId);
+  const { mutate } = useAddCartMutation();
 
   const [imageFailed, setImageFailed] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -113,10 +109,10 @@ export function ProductDetailsPage() {
       : "In stock";
 
   const handleAddToCart = () => {
-    console.log("Add to cart:", {
+    mutate({
       productId: product.id,
-      size: activeSize,
-      color: activeColor,
+      selectedSize: activeSize,
+      selectedColor: activeColor,
       quantity,
     });
   };
@@ -241,7 +237,7 @@ export function ProductDetailsPage() {
                 Size
                 {activeSize && (
                   <span className="ml-2 text-muted-foreground">
-                    — {activeSize}
+                    - {activeSize}
                   </span>
                 )}
               </legend>
@@ -256,8 +252,8 @@ export function ProductDetailsPage() {
                     onClick={() => setSelectedSize(size)}
                     className={
                       activeSize === size
-                        ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
-                        : ""
+                        ? "border-primary bg-primary text-foreground hover:bg-primary/90 hover:text-primary/70"
+                        : "text-foreground/50"
                     }
                   >
                     {size}
@@ -273,7 +269,7 @@ export function ProductDetailsPage() {
                 Color
                 {activeColor && (
                   <span className="ml-2 text-muted-foreground">
-                    — {activeColor}
+                    - {activeColor}
                   </span>
                 )}
               </legend>
@@ -288,8 +284,8 @@ export function ProductDetailsPage() {
                     onClick={() => setSelectedColor(color)}
                     className={
                       activeColor === color
-                        ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
-                        : ""
+                        ? "border-primary bg-primary text-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                        : "text-foreground/50"
                     }
                   >
                     {color}
@@ -303,44 +299,17 @@ export function ProductDetailsPage() {
             <p className="text-sm font-medium">Quantity</p>
 
             <div className="flex items-center gap-3">
-              <div className="inline-flex h-10 items-center rounded-lg border">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Decrease quantity"
-                  disabled={quantity <= 1 || isOutOfStock}
-                  onClick={() =>
-                    setQuantity((current) => Math.max(1, current - 1))
-                  }
-                  className="size-9 rounded-r-none"
-                >
-                  <Minus className="size-4" />
-                </Button>
-
-                <span
-                  aria-live="polite"
-                  className="min-w-10 text-center text-sm font-medium tabular-nums"
-                >
-                  {quantity}
-                </span>
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Increase quantity"
-                  disabled={isOutOfStock || quantity >= product.stock}
-                  onClick={() =>
-                    setQuantity((current) =>
-                      Math.min(product.stock, current + 1),
-                    )
-                  }
-                  className="size-9 rounded-l-none"
-                >
-                  <Plus className="size-4" />
-                </Button>
-              </div>
+              <Stepper
+                quantity={quantity}
+                stock={product.stock}
+                isOutOfStock={isOutOfStock}
+                onIncrease={() =>
+                  setQuantity((current) => Math.min(product.stock, current + 1))
+                }
+                onDecrease={() =>
+                  setQuantity((current) => Math.max(1, current - 1))
+                }
+              />
 
               <span className="text-xs text-muted-foreground">
                 Max. {product.stock} per order
@@ -362,12 +331,6 @@ export function ProductDetailsPage() {
             <ShoppingBag className="mr-2 size-5" />
             {isOutOfStock ? "Out of stock" : "Add to cart"}
           </Button>
-
-          <p className="text-xs leading-5 text-muted-foreground">
-            Availability is based on the current product stock. Final stock
-            validation should also be performed by the backend when adding items
-            to the cart.
-          </p>
         </section>
       </div>
     </main>

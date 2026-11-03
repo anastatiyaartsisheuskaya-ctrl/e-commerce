@@ -42,3 +42,7 @@ export async function removeCartItem(
 
   return data;
 }
+
+export async function clearCart(): Promise<void> {
+  await api.delete("/cart");
+}

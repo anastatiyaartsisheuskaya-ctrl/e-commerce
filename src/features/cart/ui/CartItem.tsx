@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Minus, Plus, Shirt, Trash2 } from "lucide-react";
+import { Shirt, Trash2 } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
+import { Stepper } from "@/shared/components/ui/stepper";
 
 import type { CartItem as CartItemType } from "../model/types";
 
@@ -23,7 +24,6 @@ export function CartItem({
   item,
   onQuantityChange,
   onRemove,
-  isUpdating = false,
   isRemoving = false,
 }: CartItemProps) {
   const [imageFailed, setImageFailed] = useState(false);
@@ -40,10 +40,9 @@ export function CartItem({
   const hasValidStock = Number.isFinite(product.stock);
 
   const isOutOfStock = hasValidStock && product.stock <= 0;
-  const reachedStockLimit = hasValidStock && quantity >= product.stock;
 
   return (
-    <article className="flex min-w-0 flex-col gap-4 border-b border-border/70 pb-6 sm:flex-row sm:gap-6">
+    <article className="flex min-w-0 flex-col gap-4 pb-6 sm:flex-row sm:gap-6">
       <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-2xl bg-muted sm:h-48 sm:w-40">
         {product.imageUrl && !imageFailed ? (
           <img
@@ -112,41 +111,15 @@ export function CartItem({
           {isOutOfStock && <Badge variant="secondary">Out of stock</Badge>}
         </div>
 
-        {/* Quantity and subtotal */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-9 items-center rounded-lg border bg-background">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label="Decrease quantity"
-                disabled={quantity <= 1 || isUpdating}
-                onClick={() => onQuantityChange(item.id, quantity - 1)}
-                className="size-8 rounded-r-none"
-              >
-                <Minus className="size-3.5" />
-              </Button>
-
-              <span
-                aria-live="polite"
-                className="min-w-8 text-center text-sm font-medium tabular-nums"
-              >
-                {quantity}
-              </span>
-
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label="Increase quantity"
-                disabled={isUpdating || isOutOfStock || reachedStockLimit}
-                onClick={() => onQuantityChange(item.id, quantity + 1)}
-                className="size-8 rounded-l-none"
-              >
-                <Plus className="size-3.5" />
-              </Button>
-            </div>
+            <Stepper
+              quantity={quantity}
+              stock={product.stock}
+              isOutOfStock={isOutOfStock}
+              onIncrease={() => onQuantityChange(item.id, quantity + 1)}
+              onDecrease={() => onQuantityChange(item.id, quantity - 1)}
+            />
 
             <Button
               type="button"

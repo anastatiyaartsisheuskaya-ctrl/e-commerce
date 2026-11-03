@@ -7,6 +7,7 @@ import { useAddCartMutation } from "@/features/cart";
 
 import { useDebouncedValue } from "@/shared/helpers";
 import { useProductsQuery } from "../model/query";
+import { useCartItemsQuery } from "@/features/cart";
 
 import { toProductSearchRequest } from "../model/helper/product-filters";
 
@@ -41,6 +42,19 @@ export function ProductsPage() {
     isFetching,
     refetch,
   } = useProductsQuery(request);
+  const { data: cart } = useCartItemsQuery();
+
+  const cartQuantities = useMemo(() => {
+    const quantities = new Map<string, number>();
+
+    for (const item of cart?.items ?? []) {
+      const currentQuantity = quantities.get(item.productId) ?? 0;
+
+      quantities.set(item.productId, currentQuantity + item.quantity);
+    }
+
+    return quantities;
+  }, [cart?.items]);
   const { mutate } = useAddCartMutation();
 
   const visibleProducts = useMemo(() => {
@@ -83,7 +97,7 @@ export function ProductsPage() {
 
   return (
     <main className="mx-auto w-full max-w-[1600px] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-8 md:flex-row">
+      <div className="flex flex-col gap-4 md:gap-8 md:flex-row">
         <CategoriesSidebar
           selectedCategories={filters.categories}
           onChange={(categories) => updateFilters({ categories })}
@@ -94,12 +108,6 @@ export function ProductsPage() {
             onChange={updateFilters}
             onClear={clearFilters}
           />
-
-          {isFetching && (
-            <p role="status" className="text-xs text-muted-foreground">
-              Updating products...
-            </p>
-          )}
 
           {isError && products && (
             <p role="alert" className="text-sm text-destructive">
@@ -134,6 +142,7 @@ export function ProductsPage() {
                 <ProductCard
                   key={product.id}
                   product={product}
+                  cartQuantity={cartQuantities.get(product.id) ?? 0}
                   onAddToCart={handleAddToCart}
                 />
               ))}

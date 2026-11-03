@@ -13,6 +13,7 @@ import {
 } from "../model/mutation";
 
 import { CartPageSkeleton } from "./CartPageSkeleton";
+import { ClearCartDialog } from "./modal/ClearCartDialog";
 
 const priceFormatter = new Intl.NumberFormat("fr-FR", {
   style: "currency",
@@ -116,9 +117,13 @@ export function CartPage() {
               Your cart
             </h1>
 
-            <p className="text-sm text-muted-foreground">
-              {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
-            </p>
+            <div className="flex flex-row items-center gap-2">
+              <p className="text-sm text-muted-foreground">
+                {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
+              </p>
+
+              <ClearCartDialog disabled={items.length === 0} />
+            </div>
           </div>
 
           <Link
@@ -163,12 +168,8 @@ export function CartPage() {
             </div>
 
             <Button type="button" disabled className="h-12 w-full">
-              Checkout coming soon
+              Buy
             </Button>
-
-            <p className="text-center text-xs text-muted-foreground">
-              Delivery costs and details will be calculated at checkout.
-            </p>
           </div>
         </div>
       </div>

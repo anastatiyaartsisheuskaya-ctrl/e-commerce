@@ -39,8 +39,8 @@ export function MultiSelectFilter<T extends string>({
         render={
           <Button
             type="button"
-            variant="outline"
-            className="h-10 min-w-32 justify-between rounded-full bg-card px-4 font-normal"
+            variant="filter"
+            className="h-10 min-w-32 justify-between rounded-full px-4 font-normal"
           />
         }
       >

@@ -55,7 +55,7 @@ export function PriceFilter({ minPrice, maxPrice, onApply }: PriceFilterProps) {
         render={
           <Button
             type="button"
-            variant="outline"
+            variant="filter"
             className="h-10 min-w-32 justify-between rounded-full bg-card px-4 font-normal"
           />
         }

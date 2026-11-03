@@ -11,7 +11,7 @@ export function SaleFilter({ value, onChange }: SaleFilterProps) {
   return (
     <Button
       type="button"
-      variant={value ? "default" : "outline"}
+      variant={value ? "default" : "filter"}
       aria-pressed={value}
       onClick={() => onChange(!value)}
       className="h-10 min-w-32 justify-between rounded-full px-4"

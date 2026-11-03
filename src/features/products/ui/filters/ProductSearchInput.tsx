@@ -15,11 +15,11 @@ export function ProductSearchInput({
     <div className="relative w-full sm:max-w-xs">
       <Search
         aria-hidden="true"
-        className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-foreground"
       />
 
       <Input
-        type="search"
+        type="text"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder="Search products..."

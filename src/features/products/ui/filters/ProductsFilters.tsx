@@ -147,7 +147,7 @@ export function ProductsFilters({
           onApply={(minPrice, maxPrice) => onChange({ minPrice, maxPrice })}
         />
 
-        <div className="ml-auto">
+        <div className="lg:ml-auto">
           <SaleFilter
             value={filters.saleOnly}
             onChange={(saleOnly) => onChange({ saleOnly })}

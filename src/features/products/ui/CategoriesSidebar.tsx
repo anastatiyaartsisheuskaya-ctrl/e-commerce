@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import {
   Accordion,
@@ -6,6 +6,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/shared/components/ui/accordion";
+
+import { useMediaQuery } from "@/shared/helpers/useMediaQuery";
 
 import { useCategoriesHierarchyQuery } from "../model/query";
 import { buildCategoryTree } from "../model/helper/category-tree";
@@ -61,6 +63,7 @@ function CategoryList({
                 depth === 0 ? "min-h-13.5" : "min-h-9"
               }`}
             >
+              {/* Category selection */}
               <button
                 type="button"
                 aria-pressed={isSelected}
@@ -70,12 +73,15 @@ function CategoryList({
                 {node.name}
               </button>
 
+              {/* Expand / collapse subcategories */}
               {hasChildren && (
                 <AccordionTrigger
                   aria-label={`Expand ${node.name} subcategories`}
                   className="flex-none p-2 hover:no-underline"
                 >
-                  <span className="sr-only">Expand {node.name}</span>
+                  <span className="sr-only">
+                    Expand {node.name} subcategories
+                  </span>
                 </AccordionTrigger>
               )}
             </div>
@@ -103,6 +109,10 @@ export function CategoriesSidebar({
   selectedCategories,
   onChange,
 }: CategoriesSidebarProps) {
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(isDesktop);
+
   const {
     data: categories,
     isPending,
@@ -126,37 +136,53 @@ export function CategoriesSidebar({
 
   return (
     <aside className="w-full shrink-0 md:w-55">
-      <h2 className="mb-3 text-xs font-medium text-muted-foreground">
-        Categories
-      </h2>
+      <Accordion
+        multiple
+        value={isCategoriesOpen ? ["categories"] : []}
+        onValueChange={(value) =>
+          setIsCategoriesOpen(value.includes("categories"))
+        }
+        className="w-full"
+      >
+        <AccordionItem value="categories" className="border-b-0">
+          <AccordionTrigger className="mb-3 text-xs font-medium text-muted-foreground hover:no-underline">
+            <span>Categories</span>
+          </AccordionTrigger>
 
-      {isPending && (
-        <div className="space-y-5">
-          {Array.from({ length: 5 }, (_, index) => (
-            <div key={index} className="h-8 animate-pulse rounded bg-muted" />
-          ))}
-        </div>
-      )}
+          <AccordionContent>
+            {isPending && (
+              <div className="space-y-5">
+                {Array.from({ length: 5 }, (_, index) => (
+                  <div
+                    key={index}
+                    className="h-8 animate-pulse rounded bg-muted"
+                  />
+                ))}
+              </div>
+            )}
 
-      {isError && (
-        <p role="alert" className="text-sm text-destructive">
-          Unable to load categories.
-        </p>
-      )}
+            {isError && (
+              <p role="alert" className="text-sm text-destructive">
+                Unable to load categories.
+              </p>
+            )}
 
-      {!isPending && !isError && categoryTree.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          No categories available.
-        </p>
-      )}
+            {!isPending && !isError && categoryTree.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                No categories available.
+              </p>
+            )}
 
-      {!isPending && !isError && categoryTree.length > 0 && (
-        <CategoryList
-          nodes={categoryTree}
-          selectedCategories={selectedCategories}
-          onToggle={handleCategoryToggle}
-        />
-      )}
+            {!isPending && !isError && categoryTree.length > 0 && (
+              <CategoryList
+                nodes={categoryTree}
+                selectedCategories={selectedCategories}
+                onToggle={handleCategoryToggle}
+              />
+            )}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </aside>
   );
 }

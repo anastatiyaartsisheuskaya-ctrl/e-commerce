@@ -4,6 +4,8 @@ import { getCurrentUser } from "@/shared/helpers";
 
 import { Header } from "@/shared/components/layout/header";
 
+import { Toaster } from "@/shared/components/ui/toast";
+
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
     const user = await getCurrentUser();
@@ -26,6 +28,7 @@ function AuthenticatedLayout() {
     <>
       <Header />
       <Outlet />
+      <Toaster />
     </>
   );
 }
