@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { cartKey, productKeys } from "@/shared/api";
 
@@ -16,8 +16,6 @@ import type {
   MutationResponse,
   UpdateQuantityDto,
 } from "./types";
-
-import { queryClient } from "@/shared/api";
 
 import { toast } from "@/shared/components/ui/toast";
 
@@ -45,6 +43,8 @@ interface UpdateCartItemVariables extends UpdateQuantityDto {
 }
 
 export function useAddCartMutation() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (input: AddCartItemInput) =>
       addCartItem(validateAddCartItem(input)),
@@ -91,7 +91,7 @@ export function useAddCartMutation() {
 
       toast.add({
         type: "error",
-        title: "An Error accrued",
+        title: "An Error occurred",
         description: _error.message,
       });
     },
@@ -110,6 +110,8 @@ export function useAddCartMutation() {
 }
 
 export function useUpdateCartItemMutation() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ cartItemId, quantity }: UpdateCartItemVariables) =>
       updateCartItem(cartItemId, { quantity }),
@@ -140,7 +142,7 @@ export function useUpdateCartItemMutation() {
       }
       toast.add({
         type: "error",
-        title: "An Error accrued",
+        title: "An Error occurred",
         description: _error.message,
       });
     },
@@ -154,6 +156,8 @@ export function useUpdateCartItemMutation() {
 }
 
 export function useRemoveCartItemMutation() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (cartItemId: string) => removeCartItem(cartItemId),
 
@@ -178,7 +182,7 @@ export function useRemoveCartItemMutation() {
       }
       toast.add({
         type: "error",
-        title: "An Error accrued",
+        title: "An Error occurred",
         description: _error.message,
       });
     },
@@ -196,20 +200,34 @@ export function useRemoveCartItemMutation() {
 }
 
 export function useClearCartMutation() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: clearCart,
-    onError: (_error) => {
+
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousCart = queryClient.getQueryData<CartResponse>(queryKey);
+
+      queryClient.setQueryData<CartResponse>(queryKey, {
+        items: [],
+      });
+
+      return { previousCart };
+    },
+
+    onError: (_error, _variables, context) => {
+      if (context?.previousCart) {
+        queryClient.setQueryData(queryKey, context.previousCart);
+      }
       toast.add({
         type: "error",
-        title: "An Error accrued",
+        title: "An Error occurred",
         description: _error.message,
       });
     },
 
     onSuccess: () => {
-      queryClient.setQueryData<CartResponse>(queryKey, {
-        items: [],
-      });
       toast.add({
         type: "success",
         title: "Cart cleared",
