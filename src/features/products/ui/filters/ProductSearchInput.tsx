@@ -20,6 +20,7 @@ export function ProductSearchInput({
 
       <Input
         type="text"
+        variant="secondary"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder="Search products..."

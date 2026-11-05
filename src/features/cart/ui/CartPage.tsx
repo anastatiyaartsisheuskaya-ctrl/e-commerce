@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 
-import { Button } from "@/shared/components/ui/button";
+import { Button, buttonVariants } from "@/shared/components/ui/button";
 
 import { CartItem } from "./CartItem";
 import type { CartItem as CartItemType } from "../model/types";
@@ -78,10 +78,10 @@ export function CartPage() {
           {error.message}
         </p>
 
-        <Button variant="outline" render={<Link to="/products" search={{}} />}>
+        <Link to="/products" className={buttonVariants({ variant: "default" })}>
           <ArrowLeft className="mr-2 size-4" />
           Continue shopping
-        </Button>
+        </Link>
       </main>
     );
   }
@@ -101,9 +101,10 @@ export function CartPage() {
           </p>
         </div>
 
-        <Button render={<Link to="/products" search={{}} />}>
+        <Link to="/products" className={buttonVariants({ variant: "default" })}>
+          <ArrowLeft className="mr-2 size-4" />
           Continue shopping
-        </Button>
+        </Link>
       </main>
     );
   }

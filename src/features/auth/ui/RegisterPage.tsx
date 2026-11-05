@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -13,8 +13,14 @@ import logo from "@/shared/images/logo.svg";
 import { getAuthErrorMessage } from "../model/getAuthErrorMessage";
 import { registerSchema, type RegisterFormValues } from "../model/auth.schema";
 
+import { Eye, EyeOff } from "lucide-react";
+
 export function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const navigate = useNavigate({ from: "/register" });
 
   const {
     register,
@@ -34,6 +40,9 @@ export function RegisterPage() {
 
     try {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
+      navigate({
+        to: "/products",
+      });
     } catch (error: unknown) {
       console.error("Registration failed:", error);
       setError(getAuthErrorMessage(error));
@@ -124,15 +133,36 @@ export function RegisterPage() {
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
 
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="At least 6 characters"
-                  autoComplete="new-password"
-                  disabled={isSubmitting}
-                  aria-invalid={Boolean(errors.password)}
-                  {...register("password")}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="At least 6 characters"
+                    autoComplete="new-password"
+                    disabled={isSubmitting}
+                    aria-invalid={Boolean(errors.password)}
+                    className="pr-10"
+                    {...register("password")}
+                  />
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 size-7 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    disabled={isSubmitting}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? (
+                      <EyeOff className="size-4" />
+                    ) : (
+                      <Eye className="size-4" />
+                    )}
+                  </Button>
+                </div>
 
                 {errors.password && (
                   <p role="alert" className="text-sm text-destructive">
@@ -144,15 +174,36 @@ export function RegisterPage() {
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm password</Label>
 
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Repeat your password"
-                  autoComplete="new-password"
-                  disabled={isSubmitting}
-                  aria-invalid={Boolean(errors.confirmPassword)}
-                  {...register("confirmPassword")}
-                />
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Repeat your password"
+                    autoComplete="new-password"
+                    disabled={isSubmitting}
+                    aria-invalid={Boolean(errors.confirmPassword)}
+                    className="pr-10"
+                    {...register("confirmPassword")}
+                  />
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 size-7 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    disabled={isSubmitting}
+                    aria-label={
+                      showConfirmPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="size-4" />
+                    ) : (
+                      <Eye className="size-4" />
+                    )}
+                  </Button>
+                </div>
 
                 {errors.confirmPassword && (
                   <p role="alert" className="text-sm text-destructive">
