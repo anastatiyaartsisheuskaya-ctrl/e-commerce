@@ -1,5 +1,5 @@
 import { useState, type MouseEvent } from "react";
-import { Heart, Shirt } from "lucide-react";
+import { Shirt } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
 import { Button } from "@/shared/components/ui/button";
@@ -29,8 +29,6 @@ export function ProductCard({
   cartQuantity = 0,
 }: ProductCardProps) {
   const navigate = useNavigate({ from: "/products" });
-
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const discountPercent = Math.min(100, Math.max(0, product.salePercent));
@@ -47,11 +45,6 @@ export function ProductCard({
       params: { productId: product.id },
       search: (previous) => ({ ...previous }),
     });
-
-  const handleToggleFavorites = (event: MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    setIsFavorite((previous) => !previous);
-  };
 
   const handleOpenCartDialog = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -81,26 +74,6 @@ export function ProductCard({
               <Shirt className="size-full max-h-40" />
             </div>
           )}
-
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label={
-              isFavorite
-                ? `Remove ${product.name} from favorites`
-                : `Add ${product.name} to favorites`
-            }
-            aria-pressed={isFavorite}
-            onClick={handleToggleFavorites}
-            className="absolute right-3 top-3 size-9 rounded-full bg-white/90 text-foreground shadow-sm hover:bg-white"
-          >
-            <Heart
-              className={`size-5 ${
-                isFavorite ? "fill-primary text-primary" : ""
-              }`}
-            />
-          </Button>
 
           <div className="absolute inset-x-2 bottom-3 flex flex-wrap justify-center gap-1.5">
             {product.featured && <Badge>Featured</Badge>}
