@@ -169,7 +169,7 @@ export function CartPage() {
             </div>
 
             <Button type="button" disabled className="h-12 w-full">
-              Buy
+              Checkout is currently unavailable
             </Button>
           </div>
         </div>

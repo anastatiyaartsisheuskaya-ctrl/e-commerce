@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { isAxiosError } from "axios";
 import { Link, useParams } from "@tanstack/react-router";
-import { ArrowLeft, Heart, ShoppingBag, Shirt } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Shirt } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 import { Stepper } from "@/shared/components/ui/stepper";
@@ -33,7 +33,6 @@ export function ProductDetailsPage() {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   if (isPending) {
     return <ProductDetailsPageSkeleton />;
@@ -121,6 +120,7 @@ export function ProductDetailsPage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
       <Link
         to="/products"
+        search={(prev) => ({ ...prev })}
         className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
@@ -158,24 +158,6 @@ export function ProductDetailsPage() {
                 -{discountPercent}%
               </span>
             )}
-
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={
-                isFavorite ? "Remove from favorites" : "Add to favorites"
-              }
-              aria-pressed={isFavorite}
-              onClick={() => setIsFavorite((previous) => !previous)}
-              className="absolute right-4 top-4 size-10 rounded-full bg-background/90 hover:bg-background"
-            >
-              <Heart
-                className={`size-5 ${
-                  isFavorite ? "fill-primary text-primary" : ""
-                }`}
-              />
-            </Button>
           </div>
         </section>
 
@@ -252,8 +234,8 @@ export function ProductDetailsPage() {
                     onClick={() => setSelectedSize(size)}
                     className={
                       activeSize === size
-                        ? "border-primary bg-primary text-foreground hover:bg-primary/90 hover:text-primary/70"
-                        : "text-foreground/50"
+                        ? "border-primary bg-primary text-primary hover:bg-primary/90 hover:text-primary/70"
+                        : "text-foreground hover:bg-primary/90 hover:text-primary/70"
                     }
                   >
                     {size}
@@ -284,8 +266,8 @@ export function ProductDetailsPage() {
                     onClick={() => setSelectedColor(color)}
                     className={
                       activeColor === color
-                        ? "border-primary bg-primary text-foreground hover:bg-primary/90 hover:text-primary-foreground"
-                        : "text-foreground/50"
+                        ? "border-primary bg-primary text-primary hover:bg-primary/90 hover:text-primary/70"
+                        : "text-foreground hover:bg-primary/90 hover:text-primary/70"
                     }
                   >
                     {color}

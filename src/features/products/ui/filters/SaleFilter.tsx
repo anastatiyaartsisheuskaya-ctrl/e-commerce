@@ -14,7 +14,7 @@ export function SaleFilter({ value, onChange }: SaleFilterProps) {
       variant={value ? "default" : "filter"}
       aria-pressed={value}
       onClick={() => onChange(!value)}
-      className="h-10 min-w-32 justify-between rounded-full px-4"
+      className="h-10 min-w-32 justify-evenly rounded-full px-4"
     >
       Sale
       {value && <X className="ml-3 size-4" />}

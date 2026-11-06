@@ -63,7 +63,6 @@ function CategoryList({
                 depth === 0 ? "min-h-13.5" : "min-h-9"
               }`}
             >
-              {/* Category selection */}
               <button
                 type="button"
                 aria-pressed={isSelected}
@@ -73,7 +72,6 @@ function CategoryList({
                 {node.name}
               </button>
 
-              {/* Expand / collapse subcategories */}
               {hasChildren && (
                 <AccordionTrigger
                   aria-label={`Expand ${node.name} subcategories`}
